@@ -44,4 +44,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/recolectores/{collector}', [\App\Http\Controllers\Admin\CollectorController::class, 'destroy'])->name('admin.recolectores.destroy');
 });
 
+
+// Ruta para mostrar el formulario de registro de recolectores
+Route::get('/registro/recolector', [\App\Http\Controllers\Auth\CollectorRegistrationController::class, 'create'])->name('collector.register');
+
+Route::post('/registro/recolector', [\App\Http\Controllers\Auth\CollectorRegistrationController::class, 'verify'])->name('collector.register.verify');
+
+// Muestra el formulario final de registro (con contraseña)
+Route::get('/registro/recolector/completar/{dni}', [\App\Http\Controllers\Auth\CollectorRegistrationController::class, 'showRegistrationForm'])->name('collector.register.form');
+
+// RUTA PARA CREAR EL USUARIO FINAL (NUEVA)
+Route::post('/registro/recolector/completar', [\App\Http\Controllers\Auth\CollectorRegistrationController::class, 'store'])->name('collector.register.store');
+
+// Ruta para el panel del recolector
+Route::get('/recolector/dashboard', [\App\Http\Controllers\Recolector\DashboardController::class, 'index'])
+    ->middleware(['auth']) // Aseguramos que solo usuarios logueados puedan entrar
+    ->name('recolector.dashboard');
+
+
 require __DIR__ . '/auth.php';
