@@ -45,6 +45,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 
+Route::middleware(['auth'])->group(function() {
+    // PASO 1: Muestra el mapa de ubicación
+    Route::get('/solicitar-recojo/paso-1', [\App\Http\Controllers\Client\PickupRequestController::class, 'createStepOne'])->name('client.request.step-one.create');
+    
+    // PASO 1: Procesa y guarda temporalmente la ubicación
+    Route::post('/solicitar-recojo/paso-1', [\App\Http\Controllers\Client\PickupRequestController::class, 'postStepOne'])->name('client.request.step-one.post');
+
+    Route::get('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'createStepTwo'])->name('client.request.step-two.create');
+    
+    Route::post('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'store'])->name('client.request.step-two.store');
+});
+
+
 // Ruta para mostrar el formulario de registro de recolectores
 Route::get('/registro/recolector', [\App\Http\Controllers\Auth\CollectorRegistrationController::class, 'create'])->name('collector.register');
 

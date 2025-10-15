@@ -44,4 +44,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function pickupRequests()
+    {
+        return $this->hasMany(PickupRequest::class);
+    }
 }
