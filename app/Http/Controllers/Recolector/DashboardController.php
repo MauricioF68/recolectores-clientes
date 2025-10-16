@@ -17,6 +17,12 @@ class DashboardController extends Controller
         $user = Auth::user();
         $pendingRequests = collect(); // Por defecto, una colección vacía
 
+        $scheduledRequests = PickupRequest::where('collector_id', $user->id)
+            ->whereIn('status', ['aceptado', 'programado']) // Aceptadas o ya programadas
+            ->orderBy('proposed_date', 'asc')
+            ->orderBy('proposed_time_start', 'asc')
+            ->get();
+
         // 1. Buscamos el registro del recolector en la lista maestra para obtener su ubicación
         $collector_record = CollectorMasterList::where('dni', $user->dni)->first();
 
@@ -46,6 +52,22 @@ class DashboardController extends Controller
         // 5. Devolvemos la vista y le pasamos la lista de solicitudes
         return view('recolector.dashboard', [
             'requests' => $pendingRequests,
+        ]);
+    }
+
+    public function myPickups()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $scheduledRequests = PickupRequest::where('collector_id', $user->id)
+            ->whereIn('status', ['aceptado', 'programado', 'en_camino'])
+            ->orderBy('proposed_date', 'asc')
+            ->orderBy('proposed_time_start', 'asc')
+            ->get();
+
+        return view('recolector.my-pickups', [
+            'requests' => $scheduledRequests,
         ]);
     }
 }

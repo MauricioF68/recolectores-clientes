@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Recolector;
 
 use App\Http\Controllers\Controller;
 use App\Models\PickupRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,5 +52,36 @@ class PickupRequestController extends Controller
 
         return redirect()->route('recolector.dashboard')->with('success', 'Horario propuesto enviado al cliente.');
     }
+
+
+
+
+
+
+    public function setInProgress(PickupRequest $pickupRequest)
+    {
+        if ($pickupRequest->collector_id !== Auth::id()) {
+            abort(403);
+        }
+        $pickupRequest->update(['status' => 'en_camino']);
+        return back()->with('success', 'El cliente ha sido notificado que estás en camino.');
+    }
     
+    public function setCompleted(PickupRequest $pickupRequest)
+    {
+        if ($pickupRequest->collector_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $pickupRequest->update(['status' => 'completado']);
+
+        
+        $client = $pickupRequest->user;
+        if ($client) {
+            $client->points_balance += 10; // Asignamos 10 puntos (puedes cambiar este valor)
+            $client->save();
+        }
+
+        return redirect()->route('recolector.my-pickups')->with('success', '¡Recojo completado exitosamente!');
+    }
 }

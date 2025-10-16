@@ -70,8 +70,15 @@ Route::middleware(['auth'])->group(function() { // Más adelante, cambiaremos 'a
 
     Route::get('/recolector/solicitud/{pickupRequest}/programar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'showScheduleForm'])->name('recolector.request.schedule.show');
     
-    
+    Route::get('/recolector/mis-recojos', [\App\Http\Controllers\Recolector\DashboardController::class, 'myPickups'])->name('recolector.my-pickups');
+
     Route::post('/recolector/solicitud/{pickupRequest}/programar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'storeSchedule'])->name('recolector.request.schedule.store');
+
+    
+    Route::patch('/recolector/solicitud/{pickupRequest}/en-camino', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'setInProgress'])->name('recolector.request.in-progress');
+
+    
+    Route::patch('/recolector/solicitud/{pickupRequest}/completado', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'setCompleted'])->name('recolector.request.completed');
 });
 
 
