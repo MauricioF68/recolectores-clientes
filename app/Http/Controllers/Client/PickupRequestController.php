@@ -105,4 +105,27 @@ class PickupRequestController extends Controller
         // 5. Redirigimos con mensaje de éxito
         return redirect()->route('dashboard')->with('success', '¡Tu solicitud de recojo ha sido creada con éxito!');
     }
+
+    public function confirmSchedule(PickupRequest $pickupRequest)
+    {
+        $pickupRequest->update(['status' => 'programado']);
+
+        return redirect()->route('dashboard')->with('success', '¡Horario confirmado! Tu recojo está programado.');
+    }
+
+    /**
+     * El cliente rechaza el horario propuesto.
+     */
+    public function rejectSchedule(PickupRequest $pickupRequest)
+    {
+        $pickupRequest->update([
+            'status' => 'pendiente',
+            'collector_id' => null,
+            'proposed_date' => null,
+            'proposed_time_start' => null,
+            'proposed_time_end' => null,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Has rechazado el horario. La solicitud está disponible nuevamente.');
+    }
 }

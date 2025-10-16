@@ -18,9 +18,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\Client\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -55,16 +54,24 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'createStepTwo'])->name('client.request.step-two.create');
     
     Route::post('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'store'])->name('client.request.step-two.store');
+
+    Route::patch('/solicitud/{pickupRequest}/confirmar', [\App\Http\Controllers\Client\PickupRequestController::class, 'confirmSchedule'])->name('client.request.confirm');
+    
+    Route::patch('/solicitud/{pickupRequest}/rechazar', [\App\Http\Controllers\Client\PickupRequestController::class, 'rejectSchedule'])->name('client.request.reject');
 });
 
 // --- RUTAS DEL RECOLECTOR ---
 Route::middleware(['auth'])->group(function() { // Más adelante, cambiaremos 'auth' por un middleware de recolector
-    Route::get('/recolector/dashboard', [\App\Http\Controllers\Recolector\DashboardController::class, 'index'])->name('recolector.dashboard');
-    
-    // Ruta para ver los detalles de una solicitud (NUEVA)
+    Route::get('/recolector/dashboard', [\App\Http\Controllers\Recolector\DashboardController::class, 'index'])->name('recolector.dashboard');    
+    // Ruta para ver los detalles de una solicitud
     Route::get('/recolector/solicitud/{pickupRequest}', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'show'])->name('recolector.request.show');
-    
+
     Route::patch('/recolector/solicitud/{pickupRequest}/aceptar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'accept'])->name('recolector.request.accept');
+
+    Route::get('/recolector/solicitud/{pickupRequest}/programar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'showScheduleForm'])->name('recolector.request.schedule.show');
+    
+    
+    Route::post('/recolector/solicitud/{pickupRequest}/programar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'storeSchedule'])->name('recolector.request.schedule.store');
 });
 
 

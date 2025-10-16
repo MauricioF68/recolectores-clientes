@@ -31,6 +31,25 @@ class PickupRequestController extends Controller
         ]);
 
         // Redirigimos al panel con un mensaje de éxito
-        return redirect()->route('recolector.dashboard')->with('success', '¡Has aceptado el recojo! Ahora puedes coordinar con el cliente.');
+        return redirect()->route('recolector.request.schedule.show', $pickupRequest);
     }
+
+    public function showScheduleForm(PickupRequest $pickupRequest)
+    {
+        return view('recolector.requests.schedule', ['request' => $pickupRequest]);
+    }
+
+    public function storeSchedule(Request $request, PickupRequest $pickupRequest)
+    {
+        $validatedData = $request->validate([
+            'proposed_date' => 'required|date|after_or_equal:today',
+            'proposed_time_start' => 'required|date_format:H:i',
+            'proposed_time_end' => 'required|date_format:H:i|after:proposed_time_start',
+        ]);
+
+        $pickupRequest->update($validatedData);
+
+        return redirect()->route('recolector.dashboard')->with('success', 'Horario propuesto enviado al cliente.');
+    }
+    
 }

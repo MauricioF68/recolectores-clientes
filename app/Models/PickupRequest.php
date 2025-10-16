@@ -25,6 +25,9 @@ class PickupRequest extends Model
         'department', // <-- Añadido
         'province',   // <-- Añadido
         'district',
+        'proposed_date',
+        'proposed_time_start',
+        'proposed_time_end',
     ];
 
     public function items()

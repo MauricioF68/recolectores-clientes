@@ -48,7 +48,7 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <form action="{{ route('recolector.request.accept', $request) }}" method="POST">
-                            @csrf
+                            @csrf 
                             @method('PATCH')
                             <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
                                 Aceptar Recojo
