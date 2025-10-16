@@ -57,6 +57,16 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'store'])->name('client.request.step-two.store');
 });
 
+// --- RUTAS DEL RECOLECTOR ---
+Route::middleware(['auth'])->group(function() { // Más adelante, cambiaremos 'auth' por un middleware de recolector
+    Route::get('/recolector/dashboard', [\App\Http\Controllers\Recolector\DashboardController::class, 'index'])->name('recolector.dashboard');
+    
+    // Ruta para ver los detalles de una solicitud (NUEVA)
+    Route::get('/recolector/solicitud/{pickupRequest}', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'show'])->name('recolector.request.show');
+    
+    Route::patch('/recolector/solicitud/{pickupRequest}/aceptar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'accept'])->name('recolector.request.accept');
+});
+
 
 // Ruta para mostrar el formulario de registro de recolectores
 Route::get('/registro/recolector', [\App\Http\Controllers\Auth\CollectorRegistrationController::class, 'create'])->name('collector.register');
