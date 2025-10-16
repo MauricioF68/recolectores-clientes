@@ -1,16 +1,3 @@
-¡Claro que sí\! Aquí tienes una versión del `README.md` adaptada completamente a tu proyecto de recolectores y clientes. Mantiene los elementos gráficos y se enfoca en proporcionar instrucciones súper detalladas para que cualquier persona pueda instalarlo y ejecutarlo localmente con XAMPP.
-
------
-
-\<p align="center"\>\<a href="[https://github.com/TU\_USUARIO/TU\_REPOSITORIO](https://www.google.com/search?q=https://github.com/TU_USUARIO/TU_REPOSITORIO)" target="\_blank"\>\<img src="[https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg](https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg)" width="400" alt="Laravel Logo"\>\</a\>\</p\>
-
-\<p align="center"\>
-\<a href="[https://github.com/laravel/framework/actions](https://github.com/laravel/framework/actions)"\>\<img src="[https://github.com/laravel/framework/workflows/tests/badge.svg](https://github.com/laravel/framework/workflows/tests/badge.svg)" alt="Build Status"\>\</a\>
-\<a href="[https://packagist.org/packages/laravel/framework](https://packagist.org/packages/laravel/framework)"\>\<img src="[https://img.shields.io/packagist/dt/laravel/framework](https://img.shields.io/packagist/dt/laravel/framework)" alt="Total Downloads"\>\</a\>
-\<a href="[https://packagist.org/packages/laravel/framework](https://packagist.org/packages/laravel/framework)"\>\<img src="[https://img.shields.io/packagist/v/laravel/framework](https://img.shields.io/packagist/v/laravel/framework)" alt="Latest Stable Version"\>\</a\>
-\<a href="[https://packagist.org/packages/laravel/framework](https://packagist.org/packages/laravel/framework)"\>\<img src="[https://img.shields.io/packagist/l/laravel/framework](https://img.shields.io/packagist/l/laravel/framework)" alt="License"\>\</a\>
-\</p\>
-
 ## Sobre EcoRuta (Proyecto Recolectores)
 
 **EcoRuta** es una aplicación web diseñada para conectar a los ciudadanos (clientes) con los recolectores de residuos de su comunidad. Nuestra misión es optimizar y facilitar el proceso de recolección de basura, fomentando un manejo de residuos más eficiente y responsable. ♻️
@@ -25,7 +12,6 @@ Esta plataforma permite a los usuarios registrarse, solicitar recolecciones, ver
   - **Sistema de Notificaciones**: Alertas para confirmar servicios y mantener informados a los usuarios.
   - **Mapa Interactivo (Próximamente)**: Para visualizar rutas y ubicaciones en tiempo real.
 
------
 
 ## 🚀 Guía de Instalación Local (con XAMPP)
 
@@ -38,6 +24,8 @@ Antes de empezar, asegúrate de tener instalado lo siguiente:
 1.  **XAMPP**: Incluye Apache y MySQL. [Descargar aquí](https://www.apachefriends.org/es/index.html).
 2.  **Composer**: El manejador de dependencias para PHP. [Descargar aquí](https://getcomposer.org/download/).
 3.  **Git**: Para clonar el repositorio. [Descargar aquí](https://git-scm.com/downloads).
+3.  **Node.js y npm**: Para compilar los archivos de front-end. [Descargar aquí](https://nodejs.org/es).
+
 
 ### 🔧 Pasos de Configuración
 
@@ -97,10 +85,15 @@ Antes de empezar, asegúrate de tener instalado lo siguiente:
     ```bash
     php artisan migrate
     ```
+- front ejecuta:
+    ```bash
+    npm install
+    ```
     *Si quieres poblar la base de datos con datos de prueba (si existen), puedes usar:*
     ```bash
     php artisan migrate --seed
     ```
+    
 
 **7. ¡Lanzar la Aplicación\!** 🚀
 
@@ -120,12 +113,6 @@ Antes de empezar, asegúrate de tener instalado lo siguiente:
 
 ## 🤝 Contribuciones
 
-¡Gracias por considerar contribuir a este proyecto\! Las contribuciones son lo que hace que la comunidad de código abierto sea un lugar increíble para aprender, inspirar y crear. Cualquier contribución que hagas será **muy apreciada**.
-
-Si tienes una sugerencia para mejorar esto, por favor, haz un "fork" del repositorio y crea una "pull request". También puedes abrir un "issue" con la etiqueta "enhancement".
-
 -----
 
 ## 📜 Licencia
-
-El framework Laravel es un software de código abierto licenciado bajo la [Licencia MIT](https://opensource.org/licenses/MIT).
