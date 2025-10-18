@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF--8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administrador</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
 
 </head>
+
 <body class="bg-gray-100">
 
     <div class="flex">
@@ -17,9 +19,12 @@
             <nav>
                 <ul>
                     <li class="mb-2">
-                        <a href="#" class="block p-2 rounded hover:bg-gray-700">Recolectores</a>
+                        <a href="{{ route('admin.recolectores.index') }}" class="block p-2 rounded hover:bg-gray-700">Recolectores</a>
                     </li>
-                    </ul>
+                    <li class="mb-2">
+                        <a href="{{ route('admin.rewards.index') }}" class="block p-2 rounded hover:bg-gray-700">Recompensas</a>
+                    </li>
+                </ul>
             </nav>
         </aside>
 
@@ -27,7 +32,7 @@
             <header class="mb-8">
                 <h1 class="text-3xl font-bold">@yield('title')</h1>
             </header>
-            
+
             <div>
                 @yield('content')
             </div>
@@ -37,4 +42,5 @@
     @stack('scripts')
 
 </body>
+
 </html>

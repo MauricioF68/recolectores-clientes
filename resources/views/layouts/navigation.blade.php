@@ -20,6 +20,11 @@
                         {{ __('Mis Recojos') }}
                     </x-responsive-nav-link>
                     @endif
+                    @if(Auth::user()->role == 'usuario')
+                    <x-nav-link :href="route('client.rewards.index')" :active="request()->routeIs('client.rewards.index')">
+                        {{ __('Recompensas') }}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
 

@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
+// --- RUTAS DEL ADMIN ---
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
@@ -41,9 +41,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/recolectores/{collector}', [\App\Http\Controllers\Admin\CollectorController::class, 'update'])->name('admin.recolectores.update');
     
     Route::delete('/admin/recolectores/{collector}', [\App\Http\Controllers\Admin\CollectorController::class, 'destroy'])->name('admin.recolectores.destroy');
+
+    Route::resource('/admin/rewards', \App\Http\Controllers\Admin\RewardController::class)->names('admin.rewards');
 });
 
-
+// --- RUTAS DEL CLIENTES ---
 Route::middleware(['auth'])->group(function() {
     // PASO 1: Muestra el mapa de ubicación
     Route::get('/solicitar-recojo/paso-1', [\App\Http\Controllers\Client\PickupRequestController::class, 'createStepOne'])->name('client.request.step-one.create');
@@ -58,6 +60,11 @@ Route::middleware(['auth'])->group(function() {
     Route::patch('/solicitud/{pickupRequest}/confirmar', [\App\Http\Controllers\Client\PickupRequestController::class, 'confirmSchedule'])->name('client.request.confirm');
     
     Route::patch('/solicitud/{pickupRequest}/rechazar', [\App\Http\Controllers\Client\PickupRequestController::class, 'rejectSchedule'])->name('client.request.reject');
+
+    Route::get('/recompensas', [\App\Http\Controllers\Client\RewardController::class, 'index'])->name('client.rewards.index');
+
+    Route::post('/recompensas/{reward}/canjear', [\App\Http\Controllers\Client\RewardController::class, 'redeem'])->name('client.rewards.redeem');
+    
 });
 
 // --- RUTAS DEL RECOLECTOR ---
