@@ -17,8 +17,23 @@ class RewardClaim extends Model
         'shipping_address',
         'shipping_latitude',
         'shipping_longitude',
-        'shipping_department', 
-        'shipping_province',   
+        'shipping_department',
+        'shipping_province',
         'shipping_district',
+        'tracking_number',
+        'tracking_code',
+        'voucher_path',
+        'agency_address',
+        'pickup_password',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function reward()
+    {
+        return $this->belongsTo(Reward::class);
+    }
 }

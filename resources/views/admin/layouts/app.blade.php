@@ -24,6 +24,9 @@
                     <li class="mb-2">
                         <a href="{{ route('admin.rewards.index') }}" class="block p-2 rounded hover:bg-gray-700">Recompensas</a>
                     </li>
+                    <li class="mb-2">
+                        <a href="{{ route('admin.claims.index') }}" class="block p-2 rounded hover:bg-gray-700">Reclamos</a>
+                    </li>
                 </ul>
             </nav>
         </aside>

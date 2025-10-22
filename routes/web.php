@@ -43,6 +43,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/recolectores/{collector}', [\App\Http\Controllers\Admin\CollectorController::class, 'destroy'])->name('admin.recolectores.destroy');
 
     Route::resource('/admin/rewards', \App\Http\Controllers\Admin\RewardController::class)->names('admin.rewards');
+
+    Route::get('/admin/reward-claims', [\App\Http\Controllers\Admin\RewardClaimController::class, 'index'])->name('admin.claims.index');
+
+    Route::patch('/admin/reward-claims/{claim}/fulfill', [\App\Http\Controllers\Admin\RewardClaimController::class, 'fulfill'])->name('admin.claims.fulfill');
 });
 
 // --- RUTAS DEL CLIENTES ---
