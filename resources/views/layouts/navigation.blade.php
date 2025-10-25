@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('client.rewards.index')" :active="request()->routeIs('client.rewards.index')">
                         {{ __('Recompensas') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('client.rewards.my')" :active="request()->routeIs('client.rewards.my')">
+                        {{ __('Seguimiento Recompensas') }}
+                    </x-nav-link>
                     @endif
                 </div>
             </div>

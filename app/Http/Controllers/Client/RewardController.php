@@ -81,4 +81,18 @@ class RewardController extends Controller
         // 4. Redirigimos con un mensaje de éxito
         return redirect()->route('client.rewards.index')->with('success', '¡Recompensa canjeada con éxito!');
     }
+
+    public function myClaims()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Buscamos todos los reclamos del usuario, cargando la info de la recompensa
+        $claims = RewardClaim::where('user_id', $user->id)
+            ->with('reward') // Carga la info de la recompensa asociada
+            ->latest() // Ordena por el más reciente
+            ->get();
+
+        return view('client.rewards.my', ['claims' => $claims]);
+    }
 }

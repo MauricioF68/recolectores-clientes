@@ -4,6 +4,11 @@
 <head>
     <meta charset="UTF--8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#6777ef" />
+    <link rel="apple-touch-icon" href="{{ asset('logo.PNG') }}">
+    <link rel="manifest" href="{{ asset('/manifest.json') }}">
+
     <title>Panel de Administrador</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -42,6 +47,14 @@
         </main>
     </div>
     <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&libraries=places&callback=initMap" defer></script>
+    <script src="{{ asset('/sw.js') }}"></script>
+    <script>
+        if (!navigator.serviceWorker.controller) {
+            navigator.serviceWorker.register("/sw.js").then(function(reg) {
+                console.log("Service worker ha sido registrado para el scope: " + reg.scope);
+            });
+        }
+    </script>
     @stack('scripts')
 
 </body>

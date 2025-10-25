@@ -68,6 +68,8 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/recompensas', [\App\Http\Controllers\Client\RewardController::class, 'index'])->name('client.rewards.index');
 
     Route::post('/recompensas/{reward}/canjear', [\App\Http\Controllers\Client\RewardController::class, 'redeem'])->name('client.rewards.redeem');
+
+    Route::get('/mis-recompensas', [\App\Http\Controllers\Client\RewardController::class, 'myClaims'])->name('client.rewards.my');
     
 });
 
