@@ -1,0 +1,22 @@
+{
+    "name": "Recolectores-Clientes",
+    "short_name": "Recolectores",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#6777ef",
+    "description": "Aplicación para conectar recolectores y clientes.",
+    "icons": [
+        {
+            "src": "/images/icons/logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/icons/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
