@@ -25,6 +25,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Ruta para guardar el token FCM (Dentro de un grupo 'auth')
+    Route::post('/update-fcm-token', [App\Http\Controllers\NotificationController::class, 'storeToken'])->name('fcm.store');
+
+    Route::get('/test-notification', [App\Http\Controllers\NotificationController::class, 'sendTestNotification'])->name('test.notification');
 });
 // --- RUTAS DEL ADMIN ---
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -33,13 +38,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     })->name('admin.dashboard');
 
     Route::get('/admin/recolectores', [\App\Http\Controllers\Admin\CollectorController::class, 'index'])->name('admin.recolectores.index');
-    
+
     Route::post('/admin/recolectores', [\App\Http\Controllers\Admin\CollectorController::class, 'store'])->name('admin.recolectores.store');
-     
+
     Route::get('/admin/recolectores/{collector}/edit', [\App\Http\Controllers\Admin\CollectorController::class, 'edit'])->name('admin.recolectores.edit');
-    
+
     Route::put('/admin/recolectores/{collector}', [\App\Http\Controllers\Admin\CollectorController::class, 'update'])->name('admin.recolectores.update');
-    
+
     Route::delete('/admin/recolectores/{collector}', [\App\Http\Controllers\Admin\CollectorController::class, 'destroy'])->name('admin.recolectores.destroy');
 
     Route::resource('/admin/rewards', \App\Http\Controllers\Admin\RewardController::class)->names('admin.rewards');
@@ -50,19 +55,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 // --- RUTAS DEL CLIENTES ---
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth'])->group(function () {
     // PASO 1: Muestra el mapa de ubicación
     Route::get('/solicitar-recojo/paso-1', [\App\Http\Controllers\Client\PickupRequestController::class, 'createStepOne'])->name('client.request.step-one.create');
-    
+
     // PASO 1: Procesa y guarda temporalmente la ubicación
     Route::post('/solicitar-recojo/paso-1', [\App\Http\Controllers\Client\PickupRequestController::class, 'postStepOne'])->name('client.request.step-one.post');
 
     Route::get('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'createStepTwo'])->name('client.request.step-two.create');
-    
+
     Route::post('/solicitar-recojo/paso-2', [\App\Http\Controllers\Client\PickupRequestController::class, 'store'])->name('client.request.step-two.store');
 
     Route::patch('/solicitud/{pickupRequest}/confirmar', [\App\Http\Controllers\Client\PickupRequestController::class, 'confirmSchedule'])->name('client.request.confirm');
-    
+
     Route::patch('/solicitud/{pickupRequest}/rechazar', [\App\Http\Controllers\Client\PickupRequestController::class, 'rejectSchedule'])->name('client.request.reject');
 
     Route::get('/recompensas', [\App\Http\Controllers\Client\RewardController::class, 'index'])->name('client.rewards.index');
@@ -70,27 +75,28 @@ Route::middleware(['auth'])->group(function() {
     Route::post('/recompensas/{reward}/canjear', [\App\Http\Controllers\Client\RewardController::class, 'redeem'])->name('client.rewards.redeem');
 
     Route::get('/mis-recompensas', [\App\Http\Controllers\Client\RewardController::class, 'myClaims'])->name('client.rewards.my');
+
     
 });
 
 // --- RUTAS DEL RECOLECTOR ---
-Route::middleware(['auth'])->group(function() { // Más adelante, cambiaremos 'auth' por un middleware de recolector
-    Route::get('/recolector/dashboard', [\App\Http\Controllers\Recolector\DashboardController::class, 'index'])->name('recolector.dashboard');    
+Route::middleware(['auth'])->group(function () { // Más adelante, cambiaremos 'auth' por un middleware de recolector
+    Route::get('/recolector/dashboard', [\App\Http\Controllers\Recolector\DashboardController::class, 'index'])->name('recolector.dashboard');
     // Ruta para ver los detalles de una solicitud
     Route::get('/recolector/solicitud/{pickupRequest}', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'show'])->name('recolector.request.show');
 
     Route::patch('/recolector/solicitud/{pickupRequest}/aceptar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'accept'])->name('recolector.request.accept');
 
     Route::get('/recolector/solicitud/{pickupRequest}/programar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'showScheduleForm'])->name('recolector.request.schedule.show');
-    
+
     Route::get('/recolector/mis-recojos', [\App\Http\Controllers\Recolector\DashboardController::class, 'myPickups'])->name('recolector.my-pickups');
 
     Route::post('/recolector/solicitud/{pickupRequest}/programar', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'storeSchedule'])->name('recolector.request.schedule.store');
 
-    
+
     Route::patch('/recolector/solicitud/{pickupRequest}/en-camino', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'setInProgress'])->name('recolector.request.in-progress');
 
-    
+
     Route::patch('/recolector/solicitud/{pickupRequest}/completado', [\App\Http\Controllers\Recolector\PickupRequestController::class, 'setCompleted'])->name('recolector.request.completed');
 });
 

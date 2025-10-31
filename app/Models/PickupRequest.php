@@ -30,8 +30,18 @@ class PickupRequest extends Model
         'proposed_time_end',
     ];
 
+    public function user()
+    {
+        
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function items()
     {
         return $this->hasMany(RequestItem::class);
+    }
+    public function collector()
+    {
+        return $this->belongsTo(User::class, 'collector_id');
     }
 }

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Services\FirebaseNotificationService;
+use Exception;                                // <-- AÑADIR ESTA (para el try/catch)
+use Illuminate\Support\Facades\Log;
 use App\Models\Reward;
 use App\Models\User;
 use App\Models\RewardClaim;
@@ -33,7 +36,7 @@ class RewardController extends Controller
 
     // ... (al final de la clase, después del método index)
 
-    public function redeem(Request $request, Reward $reward)
+    public function redeem(Request $request, Reward $reward, FirebaseNotificationService $firebaseService)
     {
         // 1. Validamos que la dirección haya sido enviada
         $validatedData = $request->validate([
@@ -56,7 +59,7 @@ class RewardController extends Controller
         }
 
         // 3. Usamos una transacción para asegurar que ambas operaciones (descontar y crear) ocurran
-        DB::transaction(function () use ($user, $reward, $validatedData) {
+        DB::transaction(function () use ($user, $reward, $validatedData, $firebaseService) {
             // 3.1 Descontamos los puntos al usuario
             $user->dni = $validatedData['dni'];
             $user->phone = $validatedData['phone'];
@@ -78,8 +81,45 @@ class RewardController extends Controller
             ]);
         });
 
+        // --- 3.3 INICIO DE NOTIFICACIÓN A ADMINS ---
+        try {
+            // Buscamos a TODOS los admins con token
+            $admins = User::where('role', 'administrador')
+                ->whereNotNull('fcm_token')
+                ->get();
+
+            if ($admins->isEmpty()) {
+                Log::warning("[RewardClaim] No se encontraron admins con token FCM para notificar.");
+                return; // Salimos del bloque try, la transacción continuará
+            }
+
+            // Preparamos el mensaje
+            $clientName = $user->name;
+            $rewardName = $reward->name;
+            $pointsUsed = $reward->points_cost;
+
+            $title = "¡Nueva Solicitud de Canje!";
+            $body = "El cliente '{$clientName}' ha solicitado canjear '{$rewardName}' ({$pointsUsed} pts).";
+
+            // Enviamos la notificación a cada admin
+            foreach ($admins as $admin) {
+                Log::debug("[RewardClaim] Notificando al admin [ID: {$admin->id}]...");
+                $success = $firebaseService->sendNotification($admin->fcm_token, $title, $body);
+                if (!$success) {
+                    Log::warning("[RewardClaim] Fallo al notificar al admin [ID: {$admin->id}].");
+                }
+            }
+        } catch (Exception $e) {
+            // Si las notificaciones fallan, NO detenemos la transacción.
+            // Solo lo registramos.
+            Log::error('[RewardClaim] Error al notificar a los admins: ' . $e->getMessage());
+        }
+        // --- FIN DE NOTIFICACIÓN ---
+
+        // Fin de la transacción
+
         // 4. Redirigimos con un mensaje de éxito
-        return redirect()->route('client.rewards.index')->with('success', '¡Recompensa canjeada con éxito!');
+        return redirect()->route('client.rewards.index')->with('success', '¡Recompensa canjeada con éxito! Se ha notificado al administrador.');
     }
 
     public function myClaims()

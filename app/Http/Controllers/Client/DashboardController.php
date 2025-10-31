@@ -11,9 +11,8 @@ class DashboardController extends Controller
     public function index()
     {
         /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        // Buscamos las solicitudes del usuario logueado, ordenadas por la más reciente
+        $user = Auth::user(); 
+        
         $requests = $user->pickupRequests()->latest()->get();
 
         return view('dashboard', ['requests' => $requests]);

@@ -35,4 +35,8 @@ return [
         'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    'firebase' => [
+        'vapid_public_key' => env('VAPID_PUBLIC_KEY'),
+    ],
+
 ];

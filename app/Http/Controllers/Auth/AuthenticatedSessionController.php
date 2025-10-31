@@ -29,7 +29,22 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        $user = $request->user();
+
+        switch ($user->role) {
+            case 'administrador':
+                // Usamos el nombre de tu ruta de admin
+                return redirect()->route('admin.dashboard');
+                
+            case 'recolector':
+                // Usamos el nombre de tu ruta de recolector
+                return redirect()->route('recolector.dashboard');
+                
+            case 'cliente': // O cualquier otro rol que no sea admin/recolector
+            default:
+                // Esta es la lógica original de Breeze
+                return redirect()->intended(RouteServiceProvider::HOME); // HOME es '/dashboard'
+        }
     }
 
     /**

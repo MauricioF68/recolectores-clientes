@@ -24,6 +24,7 @@ class User extends Authenticatable
         'role', // <-- Añadido
         'dni',  // <-- Añadido
         'phone',
+        'fcm_token',
     ];
 
     /**
