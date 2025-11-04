@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\RewardClaim;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use App\Services\FirebaseNotificationService; // <-- AÑADIR ESTA
+use Illuminate\Support\Facades\Log;           // <-- AÑADIR ESTA
+use Exception;
 
 class RewardClaimController extends Controller
 {
@@ -20,7 +23,7 @@ class RewardClaimController extends Controller
         return view('admin.claims.index', ['claims' => $claims]);
     }
 
-    public function fulfill(Request $request, RewardClaim $claim)
+    public function fulfill(Request $request, RewardClaim $claim, FirebaseNotificationService $firebaseService)
     {
         $validatedData = $request->validate([
             'tracking_number' => 'nullable|string|max:255',
@@ -51,6 +54,47 @@ class RewardClaimController extends Controller
         ]);
         // --- END OF CORRECTION ---
 
-        return redirect()->route('admin.claims.index')->with('success', 'Comprobante enviado correctamente.');
+        try {
+            // Usamos la relación 'user' que ya confirmamos que existe
+            $client = $claim->user;
+
+            if ($client && $client->fcm_token) {
+                $title = "¡Tu recompensa está en camino!";
+
+                // Creamos un cuerpo dinámico con los datos que llenó el admin
+                // (Usamos los datos de $validatedData)
+                $agency = $validatedData['agency_address'] ?? 'la agencia';
+                $tracking = $validatedData['tracking_number'] ?? null;
+                $password = $validatedData['pickup_password'] ?? null;
+
+                $body = "Tu premio ha sido enviado por {$agency} y llegará en aprox. 3 días.";
+
+                // Añadimos info extra si el admin la proporcionó
+                if ($tracking) {
+                    $body .= " N° de seguimiento: {$tracking}.";
+                }
+                if ($password) {
+                    $body .= " Clave de recojo: {$password}.";
+                }
+
+                Log::debug("[RewardFulfill] Notificando al cliente [ID: {$client->id}]...");
+
+                // Enviamos la notificación
+                $success = $firebaseService->sendNotification($client->fcm_token, $title, $body);
+
+                if (!$success) {
+                    Log::warning("[RewardFulfill] Fallo al enviar notificación al cliente [ID: {$client->id}].");
+                }
+            } else {
+                Log::warning("[RewardFulfill] No se pudo notificar al cliente para el reclamo [ID: {$claim->id}]. Cliente no encontrado o sin token FCM.");
+            }
+        } catch (Exception $e) {
+            // Si la notificación falla, no rompemos la app, solo lo logueamos
+            Log::error('[RewardFulfill] Error al notificar envío al cliente: ' . $e->getMessage(), ['exception' => $e]);
+        }
+        // --- FIN DE NOTIFICACIÓN ---
+
+        // 4. Redirigimos al admin
+        return redirect()->route('admin.claims.index')->with('success', 'Comprobante enviado y cliente notificado correctamente.');
     }
 }

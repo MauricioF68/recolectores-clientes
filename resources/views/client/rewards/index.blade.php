@@ -86,17 +86,17 @@
                                         <input id="phone" type="text" name="phone" value="{{ Auth::user()->phone }}" class="mt-1 shadow-sm border-gray-300 rounded-md w-full" required>
                                     </div>
                                     <div>
-                                        <label for="address-input" class="block text-sm font-medium text-gray-700">Dirección</label>
-                                        <input id="address-input" type="text" name="address" required class="mt-1 shadow-sm border-gray-300 rounded-md w-full">
+                                        <label for="address-modal-input" class="block text-sm font-medium text-gray-700">Dirección</label>
+                                        <input id="address-modal-input" type="text" name="address" required class="mt-1 shadow-sm border-gray-300 rounded-md w-full">
                                     </div>
-                                    <div id="map" class="h-64 w-full bg-gray-200 rounded-md"></div>
+                                    <div id="map-modal" class="h-64 w-full bg-gray-200 rounded-md"></div>
                                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <input id="department-input" type="text" name="department" placeholder="Departamento" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
-                                        <input id="province-input" type="text" name="province" placeholder="Provincia" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
-                                        <input id="district-input" type="text" name="district" placeholder="Distrito" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
+                                        <input id="department-modal-input" type="text" name="department" placeholder="Departamento" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
+                                        <input id="province-modal-input" type="text" name="province" placeholder="Provincia" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
+                                        <input id="district-modal-input" type="text" name="district" placeholder="Distrito" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
                                     </div>
-                                    <input type="hidden" name="latitude" id="latitude-input">
-                                    <input type="hidden" name="longitude" id="longitude-input">
+                                    <input type="hidden" name="latitude" id="latitude-modal-input">
+                                    <input type="hidden" name="longitude" id="longitude-modal-input">
                                 </div>
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -110,153 +110,5 @@
         </div>
     </div>
 
-    @push('scripts')
-    <script>
-        let map;
-        let marker;
-        let geocoder;
-        // Definimos las variables de los inputs fuera para que sean accesibles globalmente en el script
-        let latInput, lngInput, addressInput, departmentInput, provinceInput, districtInput;
-
-        function initMap() {
-            latInput = document.getElementById('latitude-input');
-            lngInput = document.getElementById('longitude-input');
-            addressInput = document.getElementById('address-input');
-            departmentInput = document.getElementById('department-input');
-            provinceInput = document.getElementById('province-input');
-            districtInput = document.getElementById('district-input');
-
-            const defaultPosition = {
-                lat: -9.19,
-                lng: -75.01
-            };
-
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: defaultPosition,
-                zoom: 5,
-            });
-
-            marker = new google.maps.Marker({
-                map: map,
-                draggable: true,
-                anchorPoint: new google.maps.Point(0, -29),
-            });
-
-            geocoder = new google.maps.Geocoder();
-
-            const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-                componentRestrictions: {
-                    country: "pe"
-                },
-                fields: ["address_components", "geometry", "name"],
-                types: ["address"],
-            });
-
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-                if (place.geometry) {
-                    addressInput.value = place.name;
-                    updateMapAndFields(place.geometry.location, place.address_components);
-                }
-            });
-
-            marker.addListener('dragend', () => {
-                geocodePosition(marker.getPosition());
-            });
-
-            window.addEventListener('open-redeem-modal', (event) => {
-                const savedLocation = event.detail.location;
-
-                if (savedLocation && savedLocation.latitude && savedLocation.longitude) {
-                    const position = {
-                        lat: parseFloat(savedLocation.latitude),
-                        lng: parseFloat(savedLocation.longitude)
-                    };
-
-                    addressInput.value = savedLocation.address || '';
-                    departmentInput.value = savedLocation.department || '';
-                    provinceInput.value = savedLocation.province || '';
-                    districtInput.value = savedLocation.district || '';
-                    latInput.value = position.lat;
-                    lngInput.value = position.lng;
-
-                    map.setCenter(position);
-                    map.setZoom(16);
-                    marker.setPosition(position);
-                    marker.setVisible(true);
-
-                } else {
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                const userPosition = {
-                                    lat: position.coords.latitude,
-                                    lng: position.coords.longitude
-                                };
-                                updateMapAndFields(userPosition);
-                            },
-                            () => {
-                                updateMapAndFields(defaultPosition);
-                            }
-                        );
-                    } else {
-                        updateMapAndFields(defaultPosition);
-                    }
-                }
-            });
-        }
-
-        function updateMapAndFields(location, addressComponents = null) {
-            map.setCenter(location);
-            map.setZoom(16);
-            marker.setPosition(location);
-            marker.setVisible(true);
-
-            latInput.value = location.lat();
-            lngInput.value = location.lng();
-
-            if (addressComponents) {
-                fillAddressFields(addressComponents);
-            } else {
-                geocodePosition(location);
-            }
-        }
-
-        function geocodePosition(pos) {
-            geocoder.geocode({
-                location: pos
-            }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    addressInput.value = results[0].formatted_address;
-                    fillAddressFields(results[0].address_components);
-                }
-            });
-        }
-
-        function fillAddressFields(components) {
-            console.log("Datos recibidos de Google:", components);
-            let department = '';
-            let province = '';
-            let district = '';
-
-            for (const component of components) {
-                const types = component.types;
-                if (types.includes('administrative_area_level_1')) {
-                    department = component.long_name;
-                }
-                if (types.includes('administrative_area_level_2')) {
-                    province = component.long_name;
-                }
-                if (types.includes('locality')) {
-                    district = component.long_name;
-                }
-            }
-
-            departmentInput.value = department;
-            provinceInput.value = province;
-            districtInput.value = district;
-        }
-    </script>
-    <script async src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.api_key') }}&libraries=places&callback=initMap"></script>
-    @endpush
+    
 </x-app-layout>

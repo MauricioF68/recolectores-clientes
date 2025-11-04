@@ -40,7 +40,11 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 border-b border-gray-200">
                         <h3 class="text-lg font-bold">Ubicación</h3>
-                        <div id="map" class="h-64 w-full bg-gray-200 rounded-md mt-4"></div>
+                        <div id="map-show-request" 
+                             class="h-64 w-full bg-gray-200 rounded-md mt-4"
+                             data-latitude="{{ $request->latitude }}"
+                             data-longitude="{{ $request->longitude }}">
+                        </div>
                         <p class="mt-2 text-sm text-gray-700">{{ $request->address }}</p>
                     </div>
                 </div>
@@ -60,23 +64,4 @@
 
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        function initMap() {
-            const location = {
-                lat: parseFloat('{{ $request->latitude }}'),
-                lng: parseFloat('{{ $request->longitude }}')
-            };
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: location,
-                zoom: 16,
-            });
-            const marker = new google.maps.Marker({
-                position: location,
-                map: map,
-            });
-        }
-    </script>
-    @endpush
 </x-app-layout>

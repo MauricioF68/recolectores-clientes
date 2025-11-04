@@ -12,15 +12,16 @@
         openCreateModal() {
             this.editMode = false;
             this.formAction = '{{ route('admin.recolectores.store') }}';
-            this.$nextTick(() => {
-                document.getElementById('collectorForm').reset();
-                if (window.map) {
-                    map.setCenter({ lat: -9.19, lng: -75.01 });
-                    map.setZoom(5);
-                    if (window.marker) marker.setVisible(false);
-                }
-            });
+            document.getElementById('collectorForm').reset();
+            
             this.isModalOpen = true;
+
+            // ===== MODIFICADO =====
+            // Limpiamos la lógica de aquí y solo DISPARAMOS el evento.
+            // Pasamos 'null' porque es un recolector nuevo.
+            this.$nextTick(() => {
+                window.dispatchEvent(new CustomEvent('open-recolector-modal', { detail: { collector: null } }));
+            });
         },
 
         async openEditModal(collectorId) {
@@ -37,29 +38,26 @@
                 form.dni.value = collector.dni || '';
                 form.email.value = collector.email || '';
                 form.status.value = collector.status || 'activo';
-                form.address.value = collector.address || '';
-                form.department.value = collector.department || '';
-                form.province.value = collector.province || '';
-                form.district.value = collector.district || '';
-                form.latitude.value = collector.latitude || '';
-                form.longitude.value = collector.longitude || '';
+                
+                // Usamos los IDs únicos del formulario
+                form['address-recolector-input'].value = collector.address || '';
+                form['department-recolector-input'].value = collector.department || '';
+                form['province-recolector-input'].value = collector.province || '';
+                form['district-recolector-input'].value = collector.district || '';
+                form['latitude-recolector-input'].value = collector.latitude || '';
+                form['longitude-recolector-input'].value = collector.longitude || '';
 
                 this.formAction = `/admin/recolectores/${collector.id}`;
                 this.editMode = true;
                 this.isModalOpen = true;
 
-                if (collector.latitude && collector.longitude) {
-                    const location = { lat: parseFloat(collector.latitude), lng: parseFloat(collector.longitude) };
-                    setTimeout(() => {
-                        if (window.google && window.map) {
-                            google.maps.event.trigger(map, 'resize');
-                            map.setCenter(location);
-                            map.setZoom(15);
-                            marker.setPosition(location);
-                            marker.setVisible(true);
-                        }
-                    }, 200);
-                }
+                // ===== MODIFICADO =====
+                // Limpiamos la lógica del setTimeout y DISPARAMOS el evento.
+                // Pasamos el objeto 'collector' completo.
+                this.$nextTick(() => {
+                    window.dispatchEvent(new CustomEvent('open-recolector-modal', { detail: { collector: collector } }));
+                });
+
             } catch (error) {
                 console.error('Error fetching collector data:', error);
                 alert('No se pudo cargar la información del recolector.');
@@ -85,7 +83,10 @@
         </button>
     </div>
 
+    <!-- Fondo del Modal -->
     <div x-show="isModalOpen" x-transition.opacity class="fixed inset-0 bg-gray-500 bg-opacity-75" aria-hidden="true" style="display: none;"></div>
+    
+    <!-- Contenido del Modal -->
     <div x-show="isModalOpen" x-transition class="fixed inset-0 z-10 overflow-y-auto" style="display: none;">
         <div class="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
             <div @click.away="closeModal()" class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:w-full sm:max-w-2xl">
@@ -97,6 +98,7 @@
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class="text-lg leading-6 font-medium text-gray-900" x-text="editMode ? 'Editar Recolector' : 'Añadir Nuevo Recolector'"></h3>
                         <div class="mt-4 grid grid-cols-1 gap-6">
+                            
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <input id="first_name" type="text" name="first_name" placeholder="Primer Nombre (Obligatorio)" class="shadow-sm border-gray-300 rounded-md w-full" required>
                                 <input id="middle_name" type="text" name="middle_name" placeholder="Segundo Nombre" class="shadow-sm border-gray-300 rounded-md w-full">
@@ -107,25 +109,26 @@
                                 <input id="dni" type="text" name="dni" placeholder="DNI (Obligatorio)" class="shadow-sm border-gray-300 rounded-md w-full" required>
                                 <input id="email" type="email" name="email" placeholder="Correo Electrónico" class="shadow-sm border-gray-300 rounded-md w-full">
                             </div>
-                            <div x-show="editMode">
+                            <div x-show="editMode" style="display: none;">
                                 <label for="status" class="block text-sm font-medium text-gray-700">Estado</label>
                                 <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                     <option value="activo">Activo</option>
                                     <option value="suspendido">Suspendido</option>
                                 </select>
                             </div>
+                            
                             <div>
-                                <label for="address-input" class="block text-sm font-medium text-gray-700">Buscar Dirección</label>
-                                <input id="address-input" type="text" name="address" placeholder="Escribe una dirección para autocompletar..." class="mt-1 shadow-sm border-gray-300 rounded-md w-full">
+                                <label for="address-recolector-input" class="block text-sm font-medium text-gray-700">Buscar Dirección</label>
+                                <input id="address-recolector-input" type="text" name="address" placeholder="Escribe una dirección para autocompletar..." class="mt-1 shadow-sm border-gray-300 rounded-md w-full">
                             </div>
-                            <div id="map" class="h-64 w-full bg-gray-200 rounded-md"></div>
+                            <div id="map-recolector" class="h-64 w-full bg-gray-200 rounded-md"></div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <input id="department-input" type="text" name="department" placeholder="Departamento" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
-                                <input id="province-input" type="text" name="province" placeholder="Provincia" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
-                                <input id="district-input" type="text" name="district" placeholder="Distrito" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
+                                <input id="department-recolector-input" type="text" name="department" placeholder="Departamento" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
+                                <input id="province-recolector-input" type="text" name="province" placeholder="Provincia" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
+                                <input id="district-recolector-input" type="text" name="district" placeholder="Distrito" class="shadow-sm border-gray-300 rounded-md w-full bg-gray-100" readonly>
                             </div>
-                            <input type="hidden" name="latitude" id="latitude-input">
-                            <input type="hidden" name="longitude" id="longitude-input">
+                            <input type="hidden" name="latitude" id="latitude-recolector-input">
+                            <input type="hidden" name="longitude" id="longitude-recolector-input">
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -136,6 +139,8 @@
             </div>
         </div>
     </div>
+    
+    <!-- Tabla de Recolectores -->
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6 bg-white border-b border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
@@ -179,69 +184,4 @@
     </div>
 </div>
 
-@push('scripts')
-<script>
-    let map;
-    let marker;
-    let autocomplete;
-
-    function initMap() {
-        const initialPosition = {
-            lat: -9.19,
-            lng: -75.01
-        };
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: initialPosition,
-            zoom: 5
-        });
-        marker = new google.maps.Marker({
-            map: map,
-            anchorPoint: new google.maps.Point(0, -29)
-        });
-        const addressInput = document.getElementById('address-input');
-        autocomplete = new google.maps.places.Autocomplete(addressInput, {
-            componentRestrictions: {
-                country: "pe"
-            },
-            fields: ["address_components", "geometry", "icon", "name", "formatted_address"],
-        });
-        autocomplete.addListener('place_changed', onPlaceChanged);
-    }
-
-    function onPlaceChanged() {
-        marker.setVisible(false);
-        const place = autocomplete.getPlace();
-        if (place.geometry) {
-            document.getElementById('address-input').value = place.formatted_address;
-            updateMapAndFields(place.geometry.location, place.address_components, 15);
-        }
-    }
-
-    function updateMapAndFields(location, components, zoom) {
-        map.setCenter(location);
-        map.setZoom(zoom);
-        marker.setPosition(location);
-        marker.setVisible(true);
-        document.getElementById('latitude-input').value = location.lat();
-        document.getElementById('longitude-input').value = location.lng();
-        document.getElementById('department-input').value = '';
-        document.getElementById('province-input').value = '';
-        document.getElementById('district-input').value = '';
-        for (const component of components) {
-            const componentType = component.types[0];
-            switch (componentType) {
-                case "administrative_area_level_1":
-                    document.getElementById('department-input').value = component.long_name;
-                    break;
-                case "administrative_area_level_2":
-                    document.getElementById('province-input').value = component.long_name;
-                    break;
-                case "locality":
-                    document.getElementById('district-input').value = component.long_name;
-                    break;
-            }
-        }
-    }
-</script>
-@endpush
 @endsection
