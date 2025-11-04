@@ -60,7 +60,8 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        $scheduledRequests = PickupRequest::where('collector_id', $user->id)
+        $scheduledRequests = PickupRequest::with('user')
+            ->where('collector_id', $user->id)
             ->whereIn('status', ['aceptado', 'programado', 'en_camino'])
             ->orderBy('proposed_date', 'asc')
             ->orderBy('proposed_time_start', 'asc')

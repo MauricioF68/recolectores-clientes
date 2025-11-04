@@ -13,7 +13,10 @@ class DashboardController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user(); 
         
-        $requests = $user->pickupRequests()->latest()->get();
+        $requests = $user->pickupRequests()
+                         ->with('collector') // Esto carga al recolector asociado
+                         ->latest()
+                         ->get();
 
         return view('dashboard', ['requests' => $requests]);
     }

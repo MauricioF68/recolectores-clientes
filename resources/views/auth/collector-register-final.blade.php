@@ -3,7 +3,7 @@
         @csrf
 
         <h2 class="text-2xl font-bold text-center mb-4">Completar Registro</h2>
-        <p class="text-center text-gray-600 mb-6">Tus datos han sido verificados. Por favor, crea una contraseña para activar tu cuenta.</p>
+        <p class="text-center text-gray-600 mb-6">Tus datos han sido verificados. Por favor, crea una contraseña e ingrese su numero de telefono para activar tu cuenta.</p>
 
         <div class="space-y-4 mb-6">
             <div>
@@ -18,6 +18,17 @@
              <div>
                 <x-input-label for="email" value="Correo Electrónico" />
                 <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="$collectorData->email" required />
+            </div>
+            <div class="mt-4">
+                <x-input-label for="phone" value="Teléfono (Celular)" />
+                <x-text-input id="phone" class="block mt-1 w-full" 
+                                type="text" 
+                                name="phone" 
+                                :value="old('phone')" 
+                                required 
+                                autocomplete="tel" 
+                                placeholder="987654321" />
+                <x-input-error :messages="$errors->get('phone')" class="mt-2" />
             </div>
         </div>
 

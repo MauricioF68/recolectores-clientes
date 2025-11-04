@@ -56,8 +56,8 @@
                                         </div>
 
                                         <div class="sm:col-span-6">
-                                            <label :for="'note_' + index" class="block text-sm font-medium text-gray-700">Nota (Opcional)</label>
-                                            <textarea x-model="item.note" :name="'items['+index+'][note]'" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Ej: Las botellas están en una caja"></textarea>
+                                            <label :for="'note_' + index" class="block text-sm font-medium text-gray-700">Precio estimado y detalles</label>
+                                            <textarea x-model="item.note" :name="'items['+index+'][note]'" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Ej: son 5 bolsas de botellas : 20 soles aprox"></textarea>
                                         </div>
 
                                         <div class="sm:col-span-6">

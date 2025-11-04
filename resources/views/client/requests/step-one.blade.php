@@ -27,8 +27,8 @@
                             </div>
 
                             <div>
-                                <label for="notes" class="block text-sm font-medium text-gray-700">Notas Adicionales (Opcional)</label>
-                                <textarea name="notes" id="notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Ej: Bolsas negras en la puerta, casa de rejas blancas..."></textarea>
+                                <label for="notes" class="block text-sm font-medium text-gray-700">Referencia de tu casa (Opcional)</label>
+                                <textarea name="notes" id="notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" placeholder="Ej: al costado de la comisaria, casa color azul con rejas negras "></textarea>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -18,12 +18,15 @@ class CollectorRegistrationController extends Controller
     public function create()
     {
         return view('auth.collector-register');
-    }public function store(Request $request)
+    }
+    
+    public function store(Request $request)
     {
         // 1. Validamos los datos del formulario final
         $request->validate([
             'dni' => 'required|string|exists:collectors_master_list,dni',
             'email' => 'required|string|email|max:255|unique:users,email',
+            'phone' => 'required|string|digits:9|unique:users,phone',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -34,6 +37,7 @@ class CollectorRegistrationController extends Controller
         $user = User::create([
             'name' => $collectorData->first_name . ' ' . $collectorData->last_name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'role' => 'recolector',
             'dni' => $request->dni,
